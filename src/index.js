@@ -2,6 +2,7 @@
 
 const util = require('util')
 const path = require('path')
+const fs = require('fs')
 
 const weekdayOfDay = function(day, weekday) {
     const delta = weekday - day.getDay()
@@ -99,5 +100,34 @@ if (args.length < 2) {
     endStr = args[1]
 }
 
-let results = workdays(startStr, endStr, config)
-console.log(results)
+const excludes = []
+if (fs.existsSync("./custom.json")) {
+    const cus = require("./custom.json")
+    if (cus.excludes) {
+        for (const s of cus.excludes) {
+            if (s.split("T").length > 0) {
+                excludes.push(s.split("T")[0])
+            } else {
+                excludes.push(s)
+            }
+        }
+    }
+}
+
+let result = {
+    custom: []
+}
+
+result.workdays = workdays(startStr, endStr, config)
+
+if (excludes.length > 0) {
+    for (const item of result.workdays) {
+        for (const ds of item.workdays) {
+            if (excludes.includes(ds) === false) {
+                result.custom.push(ds)
+            }
+        }
+    }
+}
+
+console.log(JSON.stringify(result, null, 4))
