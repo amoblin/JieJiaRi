@@ -8,7 +8,7 @@ Usage: ./index.js [start date]
 
 Sample
 
-```
+```json
 $ cd src; ./index.js 2018-09-26 2018-10-08
 {
     "custom": [],
